@@ -177,5 +177,7 @@ function openFile() {
 
   const file = files[0];
   const fileContents = fs.readFileSync(file).toString();
-  console.log(fileContents);
+
+  // send file contents to renderer
+  mainWindow.webContents.send('new-file', fileContents);
 }

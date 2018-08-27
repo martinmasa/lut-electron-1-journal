@@ -1,18 +1,28 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import Markdown from 'markdown-to-jsx'
+
 import './App.css';
 
+const { ipcRenderer } = window.require('electron');
 class App extends Component {
+  state = { 
+    loadedFile: ''
+  };
+
+  constructor() {
+    super();
+
+    ipcRenderer.on('new-file', (event, fileContent) => {
+      this.setState({
+        loadedFile: fileContent
+      });
+    });
+  }
+
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+        <Markdown>{this.state.loadedFile}</Markdown>
       </div>
     );
   }
