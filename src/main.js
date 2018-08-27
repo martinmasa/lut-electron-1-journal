@@ -24,13 +24,16 @@ function createWindow () {
       submenu: [
         {
           label: 'Open File',
-          accelerator: 'CmdOrCtrl+O',
           click () {
             openFile();
           }
         },
         {
           label: 'Open Folder',
+          accelerator: 'CmdOrCtrl+O',
+          click () {
+            openDir();
+          }
         }
       ]
     },
@@ -184,4 +187,20 @@ function openFile() {
 
   // send file contents to renderer
   mainWindow.webContents.send('new-file', fileContents);
+}
+
+function openDir() {
+  const directory = dialog.showOpenDialog(mainWindow, { 
+    properties: ['openDirectory']
+  });
+
+  if (!directory) return;
+  const dir = directory[0];
+
+  fs.readdir(dir, (err, files) => {
+    const filteredFiles = files.filter( file => file.endsWith('.md'))
+    const filePaths = filteredFiles.map( file => `${dir}/${file}`);
+    mainWindow.webContents.send('new-dir', filePaths, dir);
+  });
+
 }
