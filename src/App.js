@@ -1,5 +1,9 @@
 import React, { Component } from 'react';
 import Markdown from 'markdown-to-jsx'
+import AceEditor from 'react-ace';
+import brace from 'brace';
+import 'brace/mode/markdown';
+import 'brace/theme/dracula';
 
 import './App.css';
 
@@ -20,9 +24,21 @@ class App extends Component {
   }
 
   render() {
+    const { loadedFile } = this.state;
+
     return (
       <div className="App">
-        <Markdown>{this.state.loadedFile}</Markdown>
+        <AceEditor
+          mode="markdown"
+          theme="dracula"
+          onChange={(newContent) => {
+            this.setState({ loadedFile: newContent });
+          }}
+          name="md-editor"
+          value={loadedFile}
+        />
+        
+        <Markdown>{loadedFile}</Markdown>
       </div>
     );
   }
