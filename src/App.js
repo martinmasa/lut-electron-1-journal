@@ -8,10 +8,12 @@ import 'brace/theme/dracula';
 
 import './App.css';
 
+const settings = window.require('electron-settings');
 const { ipcRenderer } = window.require('electron');
 class App extends Component {
   state = { 
-    loadedFile: ''
+    loadedFile: '',
+    directory: settings.get('directory') || null
   };
 
   constructor() {
@@ -27,32 +29,40 @@ class App extends Component {
       this.setState({
         directory: dir
       });
+      
+      settings.set('directory', dir);
     });
   }
 
   render() {
-    const { loadedFile } = this.state;
+    const { loadedFile, directory } = this.state;
 
     return (
       <div className="App">
         <Header>Journal</Header>
-
-        <Split>
-          <CodeWindow>
-            <AceEditor
-              mode="markdown"
-              theme="dracula"
-              onChange={(newContent) => {
-                this.setState({ loadedFile: newContent });
-              }}
-              name="md-editor"
-              value={loadedFile}
-            />
-          </CodeWindow>
-          <RenderedWindow>
-            <Markdown>{loadedFile}</Markdown>
-          </RenderedWindow>
-        </Split>
+        {directory ? (
+          <Split>
+            <CodeWindow>
+              <AceEditor
+                mode="markdown"
+                theme="dracula"
+                onChange={(newContent) => {
+                  this.setState({ loadedFile: newContent });
+                }}
+                name="md-editor"
+                value={loadedFile}
+              />
+            </CodeWindow>
+            <RenderedWindow>
+              <Markdown>{loadedFile}</Markdown>
+            </RenderedWindow>
+          </Split>
+        ) : (
+          <LoadingMessage>
+            <h1>Press Cmd/Ctrl + O to open directory.</h1>
+          </LoadingMessage>
+        )
+        }
       </div>
     );
   }
@@ -73,6 +83,15 @@ const Header = styled.div`
   width: 100%;
   z-index: 10;
   -webkit-app-region: drag;
+`;
+
+const LoadingMessage = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #FFFFFF;
+  background-color: #191324;
+  height: 100vh;
 `;
 
 const Split = styled.div`

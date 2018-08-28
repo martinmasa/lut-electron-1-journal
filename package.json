@@ -3,6 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "dependencies": {
+        "electron-settings": "^3.2.0",
         "markdown-to-jsx": "^6.7.1",
         "react": "^16.4.2",
         "react-ace": "^6.1.4",
