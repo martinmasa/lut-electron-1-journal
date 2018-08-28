@@ -85,6 +85,13 @@ function createWindow () {
       label: 'Developer',
       submenu: [
         {
+          label: 'Refresh',
+          accelerator: 'CmdOrCtrl+R',
+          click() {
+            mainWindow.reload();
+          }
+        },
+        {
           label: 'Toggle Developer Tools',
           accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
           click() {
