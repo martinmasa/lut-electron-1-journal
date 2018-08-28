@@ -7,6 +7,7 @@ import 'brace/mode/markdown';
 import 'brace/theme/dracula';
 
 import './App.css';
+import { readFileSync } from 'fs';
 
 const settings = window.require('electron-settings');
 const { ipcRenderer } = window.require('electron');
@@ -50,9 +51,22 @@ class App extends Component {
         path: `${directory}/${file}`
       }));
 
-      this.setState({
-        filesData
-      })
+      this.setState(
+        {
+          filesData
+        }, 
+        () => this.loadFile(0)
+      );
+    });
+  }
+
+  loadFile = (index) => {
+    const { filesData } = this.state;
+
+    const content = fs.readFileSync(filesData[index].path).toString();
+
+    this.setState({
+      loadedFile: content
     });
   }
 
@@ -60,13 +74,15 @@ class App extends Component {
     const { loadedFile, directory, filesData } = this.state;
 
     return (
-      <div className="App">
+      <AppWrap>
         <Header>Journal</Header>
         {directory ? (
           <Split>
-            <div>
-              {filesData.map((file) => <h1>{file.path}</h1>)}
-            </div>
+            <FilesWindow>
+              {filesData.map((file, index) => (
+                <button onClick={() => this.loadFile(index)}>{file.path}</button>
+              ))}
+            </FilesWindow>
             <CodeWindow>
               <AceEditor
                 mode="markdown"
@@ -88,7 +104,7 @@ class App extends Component {
           </LoadingMessage>
         )
         }
-      </div>
+      </AppWrap>
     );
   }
 }
@@ -110,6 +126,10 @@ const Header = styled.div`
   -webkit-app-region: drag;
 `;
 
+const AppWrap = styled.div`
+  margin-top: 23px;
+`;
+
 const LoadingMessage = styled.div`
   display: flex;
   justify-content: center;
@@ -122,6 +142,23 @@ const LoadingMessage = styled.div`
 const Split = styled.div`
   display: flex;
   height: 100vh;
+`;
+
+const FilesWindow = styled.div`
+  background-color: #140F1D;
+  border-right: 1px solid #302B3A;
+  position: relative;
+  width: 20%;
+  &:after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    top: 0;
+    pointer-events: none;
+    box-shadow: -10px 0 20px rgba(0,0,0, 0.3) inset;
+  }
 `;
 
 const CodeWindow = styled.div`
