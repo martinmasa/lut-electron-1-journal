@@ -8,6 +8,7 @@ import 'brace/theme/dracula';
 
 import './App.css';
 import { readFileSync } from 'fs';
+import { writeFile } from 'fs';
 
 const settings = window.require('electron-settings');
 const { ipcRenderer } = window.require('electron');
@@ -17,6 +18,7 @@ class App extends Component {
   state = { 
     loadedFile: '',
     directory: settings.get('directory') || null,
+    activeIndex: 0,
     filesData: []
   };
 
@@ -60,13 +62,33 @@ class App extends Component {
     });
   }
 
+  changeFile = (index) => () => {
+    const { activeIndex } = this.state;
+
+    if (index !== activeIndex) {
+      this.saveFile();
+      this.loadFile(index);
+    }
+  }
+  
+
   loadFile = (index) => {
     const { filesData } = this.state;
 
     const content = fs.readFileSync(filesData[index].path).toString();
 
     this.setState({
+      activeIndex: index,
       loadedFile: content
+    });
+  }
+
+  saveFile = () => {
+    const { activeIndex, loadedFile, filesData } = this.state;
+
+    fs.writeFile(filesData[activeIndex].path, loadedFile, (err) => {
+      if (err) console.log(err);
+      console.log('saved');
     });
   }
 
@@ -80,7 +102,7 @@ class App extends Component {
           <Split>
             <FilesWindow>
               {filesData.map((file, index) => (
-                <button onClick={() => this.loadFile(index)}>{file.path}</button>
+                <button onClick={this.changeFile(index)}>{file.path}</button>
               ))}
             </FilesWindow>
             <CodeWindow>
