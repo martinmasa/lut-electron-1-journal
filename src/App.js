@@ -10,14 +10,22 @@ import './App.css';
 
 const settings = window.require('electron-settings');
 const { ipcRenderer } = window.require('electron');
+const fs = window.require('fs');
+
 class App extends Component {
   state = { 
     loadedFile: '',
-    directory: settings.get('directory') || null
+    directory: settings.get('directory') || null,
+    filesData: []
   };
 
   constructor() {
     super();
+
+    const directory = settings.get('directory');
+    if (directory) {
+      this.loadAndReadFiles(directory);
+    }
 
     ipcRenderer.on('new-file', (event, fileContent) => {
       this.setState({
@@ -25,23 +33,40 @@ class App extends Component {
       });
     });
 
-    ipcRenderer.on('new-dir', (event, filePaths, dir) => {
+    ipcRenderer.on('new-dir', (event, directory) => {
       this.setState({
-        directory: dir
+        directory
       });
       
-      settings.set('directory', dir);
+      settings.set('directory', directory);
+      this.loadAndReadFiles(directory);
+    });
+  }
+
+  loadAndReadFiles = (directory) => {
+    fs.readdir(directory, (err, files) => {
+      const filteredFiles = files.filter( file => file.endsWith('.md'))
+      const filesData = filteredFiles.map( file => ({
+        path: `${directory}/${file}`
+      }));
+
+      this.setState({
+        filesData
+      })
     });
   }
 
   render() {
-    const { loadedFile, directory } = this.state;
+    const { loadedFile, directory, filesData } = this.state;
 
     return (
       <div className="App">
         <Header>Journal</Header>
         {directory ? (
           <Split>
+            <div>
+              {filesData.map((file) => <h1>{file.path}</h1>)}
+            </div>
             <CodeWindow>
               <AceEditor
                 mode="markdown"
