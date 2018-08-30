@@ -89,7 +89,7 @@ class App extends Component {
   }
 
   render() {
-    const { loadedFile, directory, filesData } = this.state;
+    const { activeIndex, loadedFile, directory, filesData } = this.state;
 
     return (
       <AppWrap>
@@ -98,7 +98,11 @@ class App extends Component {
           <Split>
             <FilesWindow>
               {filesData.map((file, index) => (
-                <button onClick={this.changeFile(index)}>{file.path}</button>
+                <FileButton
+                  active={activeIndex === index}
+                  onClick={this.changeFile(index)}>
+                   {file.path}
+                </FileButton>
               ))}
             </FilesWindow>
             <CodeWindow>
@@ -204,4 +208,24 @@ const RenderedWindow = styled.div`
   a {
     color: #E54B4B;
   }
+`;
+
+const FileButton = styled.button`
+  padding: 10px;
+  width: 100%;
+  background: #191224;
+  opacity: 0.4;
+  color: white;
+  border: none;
+  border-bottom: 1px solid #302b3a;
+  transition: 0.3s ease all;
+  outline: none;
+  &:hover {
+    opacity: 1;
+    border-left: 4px solid #82d8d8;
+  }
+  ${({active}) => active && `
+    opacity: 1;
+    border-left: 4px solid #82d8d8;
+  `}
 `;
