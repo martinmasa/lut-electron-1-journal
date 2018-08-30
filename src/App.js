@@ -7,8 +7,6 @@ import 'brace/mode/markdown';
 import 'brace/theme/dracula';
 
 import './App.css';
-import { readFileSync } from 'fs';
-import { writeFile } from 'fs';
 
 const settings = window.require('electron-settings');
 const { ipcRenderer } = window.require('electron');
@@ -30,12 +28,6 @@ class App extends Component {
       this.loadAndReadFiles(directory);
     }
 
-    ipcRenderer.on('new-file', (event, fileContent) => {
-      this.setState({
-        loadedFile: fileContent
-      });
-    });
-
     ipcRenderer.on('new-dir', (event, directory) => {
       this.setState({
         directory
@@ -43,6 +35,10 @@ class App extends Component {
       
       settings.set('directory', directory);
       this.loadAndReadFiles(directory);
+    });
+
+    ipcRenderer.on('save-file', (event) => {
+      this.saveFile();
     });
   }
 

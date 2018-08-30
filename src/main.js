@@ -34,6 +34,13 @@ function createWindow () {
           click () {
             openDir();
           }
+        },
+        {
+          label: 'Save File',
+          accelerator: 'CmdOrCtrl+S',
+          click () {
+            saveFile();
+          }
         }
       ]
     },
@@ -205,4 +212,8 @@ function openDir() {
   const dir = directory[0];
   mainWindow.webContents.send('new-dir', dir);
 
+}
+
+function saveFile() {
+  mainWindow.webContents.send('save-file');
 }
