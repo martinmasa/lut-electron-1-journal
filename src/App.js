@@ -45,14 +45,18 @@ class App extends Component {
   loadAndReadFiles = (directory) => {
     fs.readdir(directory, (err, files) => {
       const filteredFiles = files.filter( file => file.endsWith('.md'))
-      const filesData = filteredFiles.map( file => ({
-        path: `${directory}/${file}`
-      }));
+      const filesData = filteredFiles.map( file => {
+        return {
+          date: file.split('_')[1].split('.')[0],
+          path: `${directory}/${file}`,
+          title: file.split('_')[0]
+        };
+      });
+
+      console.log(filesData);
 
       this.setState(
-        {
-          filesData
-        }, 
+        { filesData }, 
         () => this.loadFile(0)
       );
     });
@@ -101,7 +105,8 @@ class App extends Component {
                 <FileButton
                   active={activeIndex === index}
                   onClick={this.changeFile(index)}>
-                   {file.path}
+                   <p className="title">{file.title}</p>
+                   <p className="date">{file.date}</p>
                 </FileButton>
               ))}
             </FilesWindow>
@@ -220,6 +225,7 @@ const FileButton = styled.button`
   border-bottom: 1px solid #302b3a;
   transition: 0.3s ease all;
   outline: none;
+  text-align: left;
   &:hover {
     opacity: 1;
     border-left: 4px solid #82d8d8;
@@ -228,4 +234,13 @@ const FileButton = styled.button`
     opacity: 1;
     border-left: 4px solid #82d8d8;
   `}
+
+  .title {
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin: 0 0 5px;
+  }
+  .date {
+    margin: 0;
+  }
 `;
