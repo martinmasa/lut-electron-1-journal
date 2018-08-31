@@ -3,6 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "dependencies": {
+        "date-fns": "^1.29.0",
         "electron-react-devtools": "^0.5.3",
         "electron-settings": "^3.2.0",
         "markdown-to-jsx": "^6.7.1",
