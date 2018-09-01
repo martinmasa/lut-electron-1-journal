@@ -62,3 +62,13 @@ const filesData = filteredFiles.map( file => {
 
 - add key to `filesData` objects + add to `<FileButton>` component
 - set `activeIndex` state value to 0 in `createFile()` to ensure newly created file is selected
+
+---
+
+### Enhancements/Tweaks
+
+- [ ] Refactor `App.js` + move components into their own files
+- [ ] Change filename structure to `YYYYMMDD-name.md`
+- [ ] Introduce tests
+- [ ] Delete a file
+- [ ] Rename a file
