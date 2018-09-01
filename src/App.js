@@ -19,11 +19,15 @@ class App extends Component {
     loadedFile: '',
     directory: settings.get('directory') || null,
     activeIndex: 0,
+    newEntry: false,
+    newEntryName: '',
     filesData: []
   };
 
   constructor() {
     super();
+
+    this.changeValue = this.changeValue.bind(this);
 
     const directory = settings.get('directory');
     if (directory) {
@@ -48,10 +52,12 @@ class App extends Component {
     fs.readdir(directory, (err, files) => {
       const filteredFiles = files.filter( file => file.endsWith('.md'))
       const filesData = filteredFiles.map( file => {
+        const fileName = file.split('.md')[0];
         return {
-          date: file.split('_')[1].split('.')[0],
+          date: fileName.split('_')[1],
           path: `${directory}/${file}`,
-          title: file.split('_')[0]
+          title: fileName.split('_')[0],
+          key: fileName.replace(' ','-')
         };
       });
 
@@ -76,7 +82,6 @@ class App extends Component {
       this.loadFile(index);
     }
   }
-  
 
   loadFile = (index) => {
     const { filesData } = this.state;
@@ -98,8 +103,50 @@ class App extends Component {
     });
   }
 
+  changeValue(e) {
+    const { name, value } = e.target;
+    this.setState({
+      [name]: value
+    });
+  }
+
+  createFile = (e) => {
+    e.preventDefault();
+    const { directory, newEntryName, filesData } = this.state;
+    const fileDate = dateFns.format(new Date(), 'MM-DD-YY');
+    const fileName = `${newEntryName}_${fileDate}`;
+    const filePath = `${directory}/${fileName}.md`;
+
+    fs.writeFile(filePath, '', (err) => {
+      if (err) return console.log('err: ', err);
+
+      filesData.unshift({
+        path: filePath,
+        date: fileDate,
+        title: newEntryName,
+        key: fileName.replace(' ','-')
+      });
+      
+      this.setState({
+        newEntry: false,
+        newEntryName: '',
+        loadedFile: '',
+        activeIndex: 0,
+        filesData
+      });
+
+    });
+  }
+
   render() {
-    const { activeIndex, loadedFile, directory, filesData } = this.state;
+    const { 
+      activeIndex,
+      loadedFile,
+      directory,
+      filesData,
+      newEntry,
+      newEntryName
+    } = this.state;
 
     return (
       <AppWrap>
@@ -107,8 +154,25 @@ class App extends Component {
         {directory ? (
           <Split>
             <FilesWindow>
+              <Button
+                onClick={() => {this.setState({ newEntry: !newEntry })}}
+              >
+                + New Entry
+              </Button>
+              {newEntry &&
+                <form onSubmit={this.createFile}>
+                  <input
+                    name="newEntryName"
+                    type="text"
+                    autoFocus
+                    value={newEntryName}
+                    onChange={this.changeValue}
+                  />
+                </form>
+              }
               {filesData.map((file, index) => (
                 <FileButton
+                  key={file.key}
                   active={activeIndex === index}
                   onClick={this.changeFile(index)}>
                    <p className="title">{file.title}</p>
@@ -248,5 +312,21 @@ const FileButton = styled.button`
   }
   .date {
     margin: 0;
+  }
+`;
+
+const Button = styled.button`
+  background: transparent;
+  color: #FFFFFF;
+  border: 1px solid #82d8d8;
+  border-radius: 4px;
+  display: block;
+  margin: 1rem auto;
+  font-size: 1rem;
+  transition: 0.3s ease all;
+  padding: 5px 10px;
+  &:hover {
+    background: #82d8d8;
+    color: #191324;
   }
 `;
