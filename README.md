@@ -67,8 +67,8 @@ const filesData = filteredFiles.map( file => {
 
 ### Enhancements/Tweaks
 
-- [ ] Refactor `App.js` + move components into their own files
-- [ ] Change filename structure to `YYYYMMDD-name.md`
+- [ ] Refactor: `App.js` + move components into their own files
+- [ ] Refactor: Change filename structure to `YYYYMMDD-name.md`
 - [ ] Introduce tests
-- [ ] Delete a file
-- [ ] Rename a file
+- [ ] Feature: Delete a file
+- [ ] Feature: Rename a file
